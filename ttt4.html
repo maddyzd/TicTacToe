@@ -1,0 +1,183 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tic tac toe</title>
+    <style type="text/css">
+        body { display: flex; flex-direction: column; align-items: center;
+               justify-content: center; background-color: #F5F3A7;}
+        .board {display: grid; grid-template-columns: repeat(3, 100px); 
+                 grid-template-rows: repeat(3, 100px); border: 3px solid #000000}
+        .square {border: 1.5px solid #000000; margin: 5px; 
+                 display: flex; justify-content: center; align-items: center;
+                 font-size: 40px;}
+        .square:hover{background-color: rgba(0, 0, 0, 0.4);}
+        .turn,.winner{border: 3px solid #000000; margin:5px; margin-bottom: 10px; 
+                max-width: 500px; max-height: 200px; padding-left: 20px; 
+                padding-right: 20px;background-color: rgba(0, 0, 0, 0.2); 
+                font-size: 30px;}
+        #startgame{margin-top: 20px; background-color: #BAF0A0; margin: 10px; 
+                  font-size: 20px}
+        #startgame:hover{background-color: rgba(0, 0, 0, 0.4);}
+        .winner {background-color: #FAF851}
+    </style>
+    <script>
+        const NUM_SQUARES = 9;
+        // keep track of X or O player
+        let currplayer;
+        // keep track of game status (win or stalemate)
+        let gameEnd = false;
+
+// ////////////////////////////////////////////////////////////////////////////
+//          Once page loaded, event handler function for when you click a square
+//          it will put the appropriate X or O in the square.
+//          After each players move it will check if there is a win and if not
+//          then a stalemate and if neither then the game continues
+//          The players turn will be displayed
+//          Also functionality to Handle start game button to clear the
+//          board and allow squares to be clicked again. 
+///////////////////////////////////////////////////////////////////////////////
+        window.onload=function() {
+
+            resetboard();
+
+            for (let i = 0; i < NUM_SQUARES; i++) {
+                sqrObj = document.getElementById("sq" + i);
+                sqrObj.addEventListener("click", function() {
+                    if(!gameEnd && this.textContent === '') {
+                        this.textContent = currplayer;
+                        moves = createmoves();
+                        checkWin(moves);
+                        checkStalemate(moves);
+                        if (currplayer === 'X') {
+                            currplayer = 'O';
+                        } else {
+                            currplayer = 'X';
+                        }
+                        document.getElementById("turn").innerText = "Turn: " + currplayer; 
+                    }
+                    
+                })
+            }
+
+            let startclick = document.getElementById("startgame");
+            startclick.onclick = resetboard;
+        }
+    
+    </script>
+</head>
+<body>
+    <h1> Play Tic Tac Toe!</h1> 
+    <input type='button' value="Start Game" id="startgame">
+    <div class="turn" id="turn"> </div>
+    <div class="winner" id="winner"> </div>
+    <div class="board">
+    <script>
+        //create divs for the squares on the board
+        for (i=0;i<NUM_SQUARES; i++) {
+            id = "sq"+i;
+            document.write("<div class='square' id='" + id + "'></div>" );
+        }
+    </script>
+    </div>
+    <script>
+
+        // ////////////////////////////////////////////////////////////////
+        //  randomly generate X or O
+        ///////////////////////////////////////////////////////////////////
+        function xororandom() {
+            rannum = Math.random();
+            if (rannum < .5) {
+                return 'X';
+            } else {
+                return 'O';
+            }
+        }
+
+        // /////////////////////////////////////////////////////////////////////
+        //  Reset gameEnd to false
+        //  Clear the board and randomly assign first player to X or O
+       ///////////////////////////////////////////////////////////////////////
+        function resetboard() {
+            gameEnd = false;
+            document.getElementById("turn").style="display: block";
+            document.getElementById("winner").style="display: none";
+            for (let i = 0; i < NUM_SQUARES; i++) {
+                sqrObj = document.getElementById("sq" + i);
+                sqrObj.textContent = '';
+            }
+            
+            currplayer = xororandom();
+            document.getElementById("turn").innerText = "Turn: " + currplayer;
+        }
+
+        // /////////////////////////////////////////////////////////////////////
+        //  Create and return an array of the board of Xs and Os and if empty 
+        //  square -
+/       ///////////////////////////////////////////////////////////////////////
+        function createmoves () {
+            const moves = [];
+            document.querySelectorAll('.square').forEach(square => {
+                if (square.innerText !== '') {
+                    moves.push(square.innerText);
+                } else {
+                    moves.push('-');
+                } 
+            })
+            return moves;
+        }
+
+        // /////////////////////////////////////////////////////////////////////
+        //  create an array of winning conditions based on a current moves board
+        //  Check if any of the win conditions are XXX or OOO and if so
+        //  display the winner and hide the turn and disallow additional moves
+       ///////////////////////////////////////////////////////////////////////
+        function checkWin(moves) {
+
+            const winConditions = [];
+            winConditions.push(moves[0] + moves[1] + moves[2]);
+            winConditions.push(moves[3] + moves[4] + moves[5]);
+            winConditions.push(moves[6] + moves[7] + moves[8]);
+            winConditions.push(moves[0] + moves[3] + moves[6]);
+            winConditions.push(moves[1] + moves[4] + moves[7]);
+            winConditions.push(moves[2] + moves[5] + moves[8]);
+            winConditions.push(moves[0] + moves[4] + moves[8]);
+            winConditions.push(moves[2] + moves[4] + moves[6]);
+
+           
+            for(let i = 0; i < winConditions.length; i++) {
+                if(winConditions[i] === "XXX" || winConditions[i] === "OOO") {
+                    document.getElementById("winner").innerText = currplayer + " Wins!";
+                    gameEnd = true;
+                    document.getElementById("turn").style="display: none";
+                    document.getElementById("winner").style="display: block";
+                    return;
+                }
+            }
+           
+        }
+        // /////////////////////////////////////////////////////////////////////
+        //  Check if a moves board is full and has no -, if so then display
+        //  Stalemate status and hide the turn and disallow additional moves
+/       ///////////////////////////////////////////////////////////////////////
+        function checkStalemate(moves) {
+            blankcount = 0;
+            for(let i = 0; i < moves.length; i++) {
+                if(moves[i] === '-') {
+                    blankcount++;
+                }
+            }
+            if(blankcount === 0) {
+                document.getElementById("winner").innerText = " Stalemate!";
+                gameEnd = true;
+                document.getElementById("turn").style="display: none";
+                document.getElementById("winner").style="display: block";
+            }
+        }
+        
+    </script>
+    </div>
+</body>
+</html>
+
+        

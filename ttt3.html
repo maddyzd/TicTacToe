@@ -1,0 +1,108 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tic tac toe</title>
+    <style type="text/css">
+        body { display: flex; flex-direction: column; align-items: center;
+               justify-content: center;}
+        .board {display: grid; grid-template-columns: repeat(3, 100px); 
+                 grid-template-rows: repeat(3, 100px);}
+        .square {border: 1.5px solid #000000; margin: 5px; 
+                 display: flex; justify-content: center; align-items: center;
+                 font-size: 40px;}
+        .square:hover{background-color: #F5F3A7}
+        .turn,.winner{border: 1.5px solid #000000; margin:5px; max-width: 500px;
+                     max-height: 200px; padding: 10px; padding-left: 20px; 
+                     padding-right: 20px;}
+        #startgame{margin-top: 20px; background-color: #F5F3A7; margin: 10px}
+        #startgame:hover{background-color: #BAF0A0}
+    </style>
+    <script>
+        const NUM_SQUARES = 9;
+        // keep track of X or O player
+        let currplayer;
+
+// ////////////////////////////////////////////////////////////////////////////
+//          Once page loaded, event handler function for when you click a square
+//          it will put the appropriate X or O in the square and a popup will 
+//          display the square number. The players turn will also be displayed
+//          Also functionality to Handle start game button to clear the
+//          board and allow squares to be clicked again. 
+///////////////////////////////////////////////////////////////////////////////
+        window.onload=function() {
+
+            resetboard();
+
+            //event handler for all of the squares 
+            // when clicked put appropriate X or O
+            for (let i = 0; i < NUM_SQUARES; i++) {
+                sqrObj = document.getElementById("sq" + i);
+                sqrObj.addEventListener("click", function() {
+                    if(this.textContent === '') {
+                        //pop up square number
+                        alert("Square number: " + i);
+                        this.textContent = currplayer;
+                        //Switch to the next players turn
+                        if (currplayer === 'X') {
+                            currplayer = 'O';
+                        } else {
+                            currplayer = 'X';
+                        }
+                        // Display players next turn 
+                        document.getElementById("turn").innerText = "Turn: " + currplayer; 
+                    }
+                })
+            }
+            //reset board if start button clicked
+            let startclick = document.getElementById("startgame");
+            startclick.onclick = resetboard; 
+        }
+    
+    </script>
+</head>
+<body>
+    <h1> Play Tic Tac Toe!</h1> 
+    <input type='button' value="Start Game" id="startgame">
+    <div class="turn" id="turn"> </div>
+    <div class="winner" id="winner"> </div>
+    <div class="board">
+    <script>
+        //create divs for the squares on the board
+        for (i=0; i<NUM_SQUARES; i++) {
+            id = "sq"+i;
+            document.write("<div class='square' id='" + id + "'></div>" );
+        }
+    </script>
+    </div>
+
+    <script>
+        // ////////////////////////////////////////////////////////////////
+        //  randomly generate X or O
+        ///////////////////////////////////////////////////////////////////
+        function xorostart() {
+            rannum = Math.random();
+            if (rannum < .5) {
+                return 'X';
+            } else {
+                return 'O';
+            }
+        }
+    
+        // /////////////////////////////////////////////////////////////////////
+        //  Clear the board and randomly assign first player to X or O 
+        //  Display first players turn 
+/       ///////////////////////////////////////////////////////////////////////
+        function resetboard() {
+            for (let i = 0; i < NUM_SQUARES; i++) {
+                sqrObj = document.getElementById("sq" + i);
+                sqrObj.textContent = '';
+            }
+            
+            currplayer = xorostart();
+            document.getElementById("turn").innerText = "Turn: " + currplayer;
+        }
+
+    </script>
+</body>
+</html>
